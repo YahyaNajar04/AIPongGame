@@ -75,6 +75,20 @@ class Ball:
         self.x_vel *= -1
 
 
+class AIPaddle(Paddle):
+    def __init__(self, x, y, width, height):
+        super().__init__(x, y, width, height)
+
+    def move_ai(self, ball):
+        if ball.y < self.y + self.height // 2 and ball.y >= 0:
+            self.move(up=True)
+        elif ball.y > self.y + self.height // 2:
+            self.move(up=False)
+
+
+ai_paddle = AIPaddle(WIDTH - 10 - PADDLE_WIDTH, HEIGHT // 2 - PADDLE_HEIGHT // 2, PADDLE_WIDTH, PADDLE_HEIGHT)
+
+
 # Drawing items
 def draw(win, paddles, ball, left_score, right_score):
     win.fill(BLACK)
@@ -98,7 +112,7 @@ def draw(win, paddles, ball, left_score, right_score):
 
 
 # Function to handle collision
-def handle_collision(ball, left_paddle, right_paddle):
+def handle_collision(ball, left_paddle, ai_paddle):
     if ball.y + ball.radius >= HEIGHT:
         ball.y_vel *= -1
         Ball_Bounce_Sound.play()
@@ -119,12 +133,12 @@ def handle_collision(ball, left_paddle, right_paddle):
                 Ball_Bounce_Sound.play()
 
     else:
-        if right_paddle.y <= ball.y <= right_paddle.y + right_paddle.height:
-            if ball.x + ball.radius >= right_paddle.x:
+        if ai_paddle.y <= ball.y <= ai_paddle.y + ai_paddle.height:
+            if ball.x + ball.radius >= ai_paddle.x:
                 ball.x_vel *= -1
-                middle_y = right_paddle.y + right_paddle.height // 2
+                middle_y = ai_paddle.y + ai_paddle.height // 2
                 difference_in_y = middle_y - ball.y
-                reduction_factor = (right_paddle.height // 2) / Ball.MAX_VEL
+                reduction_factor = (ai_paddle.height // 2) / Ball.MAX_VEL
                 y_vel = difference_in_y / reduction_factor
                 ball.y_vel = -1 * y_vel
                 Ball_Bounce_Sound.play()
@@ -155,7 +169,7 @@ def main():
 
     while run:
         clock.tick(FPS)
-        draw(WIN, [left_paddle, right_paddle], ball, left_score, right_score)
+        draw(WIN, [left_paddle, ai_paddle], ball, left_score, right_score)
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 run = False
@@ -163,8 +177,9 @@ def main():
 
         keys = pygame.key.get_pressed()
         handle_paddle_movement(keys, left_paddle, right_paddle)
-        handle_collision(ball, left_paddle, right_paddle)
+        handle_collision(ball, left_paddle, ai_paddle)
         ball.move()
+        ai_paddle.move_ai(ball)
 
         if ball.x < 0:
             right_score += 1
@@ -180,11 +195,11 @@ def main():
         won = False
         if left_score >= WINNING_SCORE:
             won = True
-            win_text = "Left Player Won!"
+            win_text = "You Won!"
             Winning_Sound.play()
         elif right_score >= WINNING_SCORE:
             won = True
-            win_text = "Right Player Won!"
+            win_text = "AI Wins!"
             Winning_Sound.play()
 
         if won:
