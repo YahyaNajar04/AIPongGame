@@ -7,7 +7,7 @@ WIDTH, HEIGHT = 700, 500
 WIN = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption("Pong")
 SCORE_FONT = pygame.font.SysFont("comicsans", 50)
-WINNING_SCORE = 10
+WINNING_SCORE = 5
 
 # Defining colors
 WHITE = (255, 255, 255)
@@ -19,6 +19,10 @@ FPS = 60
 # Defining height and width of paddles
 PADDLE_WIDTH, PADDLE_HEIGHT = 20, 100
 BALL_RADIUS = 7
+
+# Playing Sounds
+Ball_Bounce_Sound = pygame.mixer.Sound('4391__noisecollector__pongblipf5.wav')
+Winning_Sound = pygame.mixer.Sound('582988__oysterqueen__success.mp3')
 
 
 class Paddle:
@@ -47,7 +51,7 @@ class Paddle:
 
 # Ball class
 class Ball:
-    MAX_VEL = 5
+    MAX_VEL = 7
     COLOR = WHITE
 
     def __init__(self, x, y, radius):
@@ -78,7 +82,7 @@ def draw(win, paddles, ball, left_score, right_score):
     left_score_text = SCORE_FONT.render(f"{left_score}", 1, WHITE)
     right_score_text = SCORE_FONT.render(f"{right_score}", 1, WHITE)
     win.blit(left_score_text, (WIDTH // 4 - left_score_text.get_width() // 2, 20))
-    win.blit(right_score_text, (WIDTH * (3/4) - right_score_text.get_width() // 2, 20))
+    win.blit(right_score_text, (WIDTH * (3 / 4) - right_score_text.get_width() // 2, 20))
 
     for paddle in paddles:
         paddle.draw(win)
@@ -97,8 +101,10 @@ def draw(win, paddles, ball, left_score, right_score):
 def handle_collision(ball, left_paddle, right_paddle):
     if ball.y + ball.radius >= HEIGHT:
         ball.y_vel *= -1
+        Ball_Bounce_Sound.play()
     elif ball.y - ball.radius <= 0:
         ball.y_vel *= -1
+        Ball_Bounce_Sound.play()
 
     if ball.x_vel < 0:
         if left_paddle.y <= ball.y <= left_paddle.y + left_paddle.height:
@@ -110,6 +116,7 @@ def handle_collision(ball, left_paddle, right_paddle):
                 reduction_factor = (left_paddle.height // 2) / Ball.MAX_VEL
                 y_vel = difference_in_y / reduction_factor
                 ball.y_vel = -1 * y_vel
+                Ball_Bounce_Sound.play()
 
     else:
         if right_paddle.y <= ball.y <= right_paddle.y + right_paddle.height:
@@ -120,6 +127,7 @@ def handle_collision(ball, left_paddle, right_paddle):
                 reduction_factor = (right_paddle.height // 2) / Ball.MAX_VEL
                 y_vel = difference_in_y / reduction_factor
                 ball.y_vel = -1 * y_vel
+                Ball_Bounce_Sound.play()
 
 
 # Function to move paddles
@@ -173,9 +181,11 @@ def main():
         if left_score >= WINNING_SCORE:
             won = True
             win_text = "Left Player Won!"
+            Winning_Sound.play()
         elif right_score >= WINNING_SCORE:
             won = True
             win_text = "Right Player Won!"
+            Winning_Sound.play()
 
         if won:
             text = SCORE_FONT.render(win_text, 1, WHITE)
