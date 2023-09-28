@@ -1,4 +1,5 @@
 import pygame
+from Game_Items import Paddle, Ball
 
 pygame.init()
 
@@ -25,62 +26,12 @@ Ball_Bounce_Sound = pygame.mixer.Sound('4391__noisecollector__pongblipf5.wav')
 Winning_Sound = pygame.mixer.Sound('582988__oysterqueen__success.mp3')
 
 
-class Paddle:
-    COLOR = WHITE
-    VEL = 4
-
-    def __init__(self, x, y, width, height):
-        self.x = self.original_px = x
-        self.y = self.original_py = y
-        self.width = width
-        self.height = height
-
-    def draw(self, win):
-        pygame.draw.rect(win, self.COLOR, (self.x, self.y, self.width, self.height))
-
-    def move(self, up=True):
-        if up:
-            self.y -= self.VEL
-        else:
-            self.y += self.VEL
-
-    def reset_paddle(self):
-        self.x = self.original_px
-        self.y = self.original_py
-
-
-# Ball class
-class Ball:
-    MAX_VEL = 7
-    COLOR = WHITE
-
-    def __init__(self, x, y, radius):
-        self.x = self.original_x = x
-        self.y = self.original_y = y
-        self.radius = radius
-        self.x_vel = self.MAX_VEL
-        self.y_vel = 0
-
-    def draw(self, win):
-        pygame.draw.circle(win, self.COLOR, (self.x, self.y), self.radius)
-
-    def move(self):
-        self.x += self.x_vel
-        self.y += self.y_vel
-
-    def reset(self):
-        self.x = self.original_x
-        self.y = self.original_y
-        self.y_vel = 0
-        self.x_vel *= -1
-
-
 class AIPaddle(Paddle):
     def __init__(self, x, y, width, height):
         super().__init__(x, y, width, height)
 
     def move_ai(self, ball):
-        if ball.y < self.y + self.height // 2 and ball.y >= 0:
+        if self.y + self.height // 2 > ball.y >= 0:
             self.move(up=True)
         elif ball.y > self.y + self.height // 2:
             self.move(up=False)
