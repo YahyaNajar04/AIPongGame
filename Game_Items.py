@@ -1,7 +1,7 @@
 import pygame
-
-pygame.init()
 from main import WHITE
+pygame.init()
+
 
 
 # Paddle Class
