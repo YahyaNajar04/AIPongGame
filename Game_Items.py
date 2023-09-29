@@ -6,7 +6,7 @@ WHITE = (255, 255, 255)
 
 
 # Paddle Class
-class Paddle():
+class Paddle:
     COLOR = WHITE
     VEL = 4
 
@@ -35,7 +35,7 @@ class Paddle():
 
 
 # Ball Class
-class Ball():
+class Ball:
     MAX_VEL = 7
     COLOR = WHITE
 

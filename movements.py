@@ -51,3 +51,14 @@ class movement():
             right_paddle.move(up=True)
         if keys[pygame.K_DOWN] and right_paddle.y + right_paddle.VEL < HEIGHT - right_paddle.height:
             right_paddle.move(up=False)
+
+
+class AIPaddle(Paddle):
+    def __init__(self, x, y, width, height):
+        super().__init__(x, y, width, height)
+
+    def move_ai(self, ball):
+        if self.y + self.height // 2 > ball.y >= 0:
+            self.move(up=True)
+        elif ball.y > self.y + self.height // 2:
+            self.move(up=False)
